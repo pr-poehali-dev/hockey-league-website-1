@@ -39,6 +39,25 @@ interface Champion {
   runnerUp: string;
 }
 
+interface Player {
+  id: string;
+  name: string;
+  team: string;
+  number: number;
+  goals: number;
+  assists: number;
+  games: number;
+  penalties: number;
+}
+
+interface News {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+  image?: string;
+}
+
 const Admin = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -47,17 +66,23 @@ const Admin = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [champions, setChampions] = useState<Champion[]>([]);
   const [regulations, setRegulations] = useState('');
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [news, setNews] = useState<News[]>([]);
 
   useEffect(() => {
     const savedTeams = localStorage.getItem('phl_teams');
-    const savedMatches = localStorage.getItem('phl_matches');
     const savedChampions = localStorage.getItem('phl_champions');
     const savedRegulations = localStorage.getItem('phl_regulations');
+    const savedPlayers = localStorage.getItem('phl_players');
+    const savedNews = localStorage.getItem('phl_news');
     
     if (savedTeams) setTeams(JSON.parse(savedTeams));
-    if (savedMatches) setMatches(JSON.parse(savedMatches));
     if (savedChampions) setChampions(JSON.parse(savedChampions));
     if (savedRegulations) setRegulations(savedRegulations);
+    if (savedPlayers) setPlayers(JSON.parse(savedPlayers));
+    if (savedNews) setNews(JSON.parse(savedNews));
+    
+    localStorage.removeItem('phl_matches');
   }, []);
 
   const handleLogin = () => {
@@ -86,6 +111,65 @@ const Admin = () => {
   const saveRegulations = () => {
     localStorage.setItem('phl_regulations', regulations);
     alert('Регламент сохранен!');
+  };
+
+  const savePlayers = () => {
+    localStorage.setItem('phl_players', JSON.stringify(players));
+    alert('Игроки сохранены!');
+  };
+
+  const saveNews = () => {
+    localStorage.setItem('phl_news', JSON.stringify(news));
+    alert('Новости сохранены!');
+  };
+
+  const addPlayer = () => {
+    const newPlayer: Player = {
+      id: Date.now().toString(),
+      name: 'Новый игрок',
+      team: teams[0]?.name || '',
+      number: 1,
+      goals: 0,
+      assists: 0,
+      games: 0,
+      penalties: 0
+    };
+    setPlayers([...players, newPlayer]);
+  };
+
+  const updatePlayer = (id: string, field: keyof Player, value: any) => {
+    setPlayers(players.map(player => 
+      player.id === id ? { ...player, [field]: value } : player
+    ));
+  };
+
+  const deletePlayer = (id: string) => {
+    if (confirm('Удалить игрока?')) {
+      setPlayers(players.filter(player => player.id !== id));
+    }
+  };
+
+  const addNews = () => {
+    const newNews: News = {
+      id: Date.now().toString(),
+      title: 'Новая новость',
+      content: 'Текст новости',
+      date: new Date().toLocaleDateString('ru-RU'),
+      image: ''
+    };
+    setNews([newNews, ...news]);
+  };
+
+  const updateNews = (id: string, field: keyof News, value: string) => {
+    setNews(news.map(item => 
+      item.id === id ? { ...item, [field]: value } : item
+    ));
+  };
+
+  const deleteNews = (id: string) => {
+    if (confirm('Удалить новость?')) {
+      setNews(news.filter(item => item.id !== id));
+    }
   };
 
   const addTeam = () => {
@@ -202,9 +286,11 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="teams" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8 bg-card/50">
+          <TabsList className="grid w-full grid-cols-6 mb-8 bg-card/50">
             <TabsTrigger value="teams">Команды</TabsTrigger>
             <TabsTrigger value="matches">Матчи</TabsTrigger>
+            <TabsTrigger value="players">Игроки</TabsTrigger>
+            <TabsTrigger value="news">Новости</TabsTrigger>
             <TabsTrigger value="champions">Чемпионы</TabsTrigger>
             <TabsTrigger value="regulations">Регламент</TabsTrigger>
           </TabsList>
@@ -358,6 +444,118 @@ const Admin = () => {
             <Button onClick={saveChampions} className="w-full bg-primary hover:bg-primary/90 mt-4">
               <Icon name="Save" size={20} className="mr-2" />
               Сохранить чемпионов
+            </Button>
+          </TabsContent>
+
+          <TabsContent value="players" className="space-y-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-primary">Управление игроками</h2>
+              <Button onClick={addPlayer} className="bg-primary hover:bg-primary/90">
+                <Icon name="Plus" size={20} className="mr-2" />
+                Добавить игрока
+              </Button>
+            </div>
+            {players.map((player) => (
+              <Card key={player.id} className="glass-card border-primary/20 p-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <Input
+                    placeholder="Имя игрока"
+                    value={player.name}
+                    onChange={(e) => updatePlayer(player.id, 'name', e.target.value)}
+                  />
+                  <Input
+                    placeholder="Команда"
+                    value={player.team}
+                    onChange={(e) => updatePlayer(player.id, 'team', e.target.value)}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Номер"
+                    value={player.number}
+                    onChange={(e) => updatePlayer(player.id, 'number', parseInt(e.target.value) || 0)}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Игр"
+                    value={player.games}
+                    onChange={(e) => updatePlayer(player.id, 'games', parseInt(e.target.value) || 0)}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Голы"
+                    value={player.goals}
+                    onChange={(e) => updatePlayer(player.id, 'goals', parseInt(e.target.value) || 0)}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Передачи"
+                    value={player.assists}
+                    onChange={(e) => updatePlayer(player.id, 'assists', parseInt(e.target.value) || 0)}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Штрафы (мин)"
+                    value={player.penalties}
+                    onChange={(e) => updatePlayer(player.id, 'penalties', parseInt(e.target.value) || 0)}
+                  />
+                  <Button variant="destructive" onClick={() => deletePlayer(player.id)}>
+                    <Icon name="Trash2" size={16} className="mr-2" />
+                    Удалить
+                  </Button>
+                </div>
+              </Card>
+            ))}
+            <Button onClick={savePlayers} className="w-full bg-primary hover:bg-primary/90 mt-4">
+              <Icon name="Save" size={20} className="mr-2" />
+              Сохранить игроков
+            </Button>
+          </TabsContent>
+
+          <TabsContent value="news" className="space-y-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-primary">Управление новостями</h2>
+              <Button onClick={addNews} className="bg-primary hover:bg-primary/90">
+                <Icon name="Plus" size={20} className="mr-2" />
+                Добавить новость
+              </Button>
+            </div>
+            {news.map((item) => (
+              <Card key={item.id} className="glass-card border-primary/20 p-4">
+                <div className="grid grid-cols-1 gap-4">
+                  <Input
+                    placeholder="Заголовок"
+                    value={item.title}
+                    onChange={(e) => updateNews(item.id, 'title', e.target.value)}
+                  />
+                  <Textarea
+                    placeholder="Текст новости"
+                    value={item.content}
+                    onChange={(e) => updateNews(item.id, 'content', e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                  <Input
+                    placeholder="URL изображения (опционально)"
+                    value={item.image || ''}
+                    onChange={(e) => updateNews(item.id, 'image', e.target.value)}
+                  />
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      placeholder="Дата"
+                      value={item.date}
+                      onChange={(e) => updateNews(item.id, 'date', e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button variant="destructive" onClick={() => deleteNews(item.id)}>
+                      <Icon name="Trash2" size={16} className="mr-2" />
+                      Удалить
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+            <Button onClick={saveNews} className="w-full bg-primary hover:bg-primary/90 mt-4">
+              <Icon name="Save" size={20} className="mr-2" />
+              Сохранить новости
             </Button>
           </TabsContent>
 

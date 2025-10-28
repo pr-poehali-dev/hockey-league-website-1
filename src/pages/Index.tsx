@@ -209,25 +209,9 @@ const Index = () => {
     }
     if (savedMatches) {
       setMatches(JSON.parse(savedMatches));
-    } else {
-      setMatches([
-        { id: '1', tour: 1, homeTeam: 'ЦСКА', awayTeam: 'СКА', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '01.11' },
-        { id: '2', tour: 1, homeTeam: 'ЛАДА', awayTeam: 'АМУР', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '01.11' },
-        { id: '3', tour: 1, homeTeam: 'АКБАРС', awayTeam: 'МЕТАЛЛУРГ', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '02.11' },
-        { id: '4', tour: 1, homeTeam: 'СОЧИ', awayTeam: 'АДМИРАЛ', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '02.11' },
-        { id: '5', tour: 2, homeTeam: 'СКА', awayTeam: 'ЛАДА', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '08.11' },
-        { id: '6', tour: 2, homeTeam: 'АМУР', awayTeam: 'ЦСКА', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '08.11' },
-        { id: '7', tour: 2, homeTeam: 'МЕТАЛЛУРГ', awayTeam: 'СОЧИ', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '09.11' },
-        { id: '8', tour: 2, homeTeam: 'АДМИРАЛ', awayTeam: 'АКБАРС', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '09.11' },
-      ]);
     }
     if (savedChampions) {
       setChampions(JSON.parse(savedChampions));
-    } else {
-      setChampions([
-        { season: '2024', winner: 'ЦСКА', runnerUp: 'СКА' },
-        { season: '2023', winner: 'СКА', runnerUp: 'АКБАРС' },
-      ]);
     }
   }, []);
 
@@ -290,8 +274,15 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <h1 className="text-5xl font-bold neon-text text-primary">PHL</h1>
             <div className="flex gap-4 items-center">
+              <Button variant="ghost" onClick={() => navigate('/news')} className="hover:text-secondary">
+                <Icon name="Newspaper" size={18} className="mr-2" />
+                Новости
+              </Button>
               <Button variant="ghost" onClick={() => navigate('/regulations')} className="hover:text-primary">
                 Регламент
+              </Button>
+              <Button variant="ghost" onClick={() => navigate('/stats')} className="hover:text-accent">
+                Статистика
               </Button>
               <Button variant="outline" size="icon" className="hover:text-primary hover:border-primary transition-all" asChild>
                 <a href="https://t.me" target="_blank" rel="noopener noreferrer">
@@ -496,18 +487,21 @@ const Index = () => {
       </main>
 
       <footer className="border-t border-primary/10 bg-black/20 py-4 mt-12">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-muted-foreground text-sm">
-            © 2025 Первая Хоккейная Лига. Все права защищены.
-            {' '}
-            <span 
-              onClick={() => navigate('/admin')} 
-              className="opacity-5 hover:opacity-100 hover:text-primary transition-all cursor-pointer select-none"
-              title="Админ-панель"
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
+            <p className="text-muted-foreground text-sm">
+              © 2025 Первая Хоккейная Лига. Все права защищены.
+            </p>
+            <Button
+              onClick={() => navigate('/admin')}
+              variant="ghost"
+              size="sm"
+              className="gap-2 text-muted-foreground hover:text-primary"
             >
-              ⚙
-            </span>
-          </p>
+              <Icon name="Key" size={16} />
+              Админ-панель
+            </Button>
+          </div>
         </div>
       </footer>
 
