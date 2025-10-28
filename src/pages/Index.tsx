@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -46,6 +47,17 @@ const TEAM_COLORS: Record<string, string> = {
   'МЕТАЛЛУРГ': '#c8102e',
   'СОЧИ': '#0099cc',
   'АДМИРАЛ': '#003087'
+};
+
+const TEAM_LOGOS: Record<string, string> = {
+  'ЦСКА': 'https://cdn.poehali.dev/projects/ac9779fa-ed4f-4f90-94bd-d271950d6e7a/files/7cc1c226-1ad3-4e6e-a664-4ccca034b6a3.jpg',
+  'СКА': 'https://cdn.poehali.dev/projects/ac9779fa-ed4f-4f90-94bd-d271950d6e7a/files/98f7fcb5-191d-4728-924d-be960d91edcc.jpg',
+  'ЛАДА': 'https://cdn.poehali.dev/projects/ac9779fa-ed4f-4f90-94bd-d271950d6e7a/files/0a9fe94a-fcb4-406a-9e1b-5fa1b3498943.jpg',
+  'АМУР': 'https://cdn.poehali.dev/projects/ac9779fa-ed4f-4f90-94bd-d271950d6e7a/files/e2339579-4c02-4127-975d-e58968034e0a.jpg',
+  'АКБАРС': 'https://cdn.poehali.dev/projects/ac9779fa-ed4f-4f90-94bd-d271950d6e7a/files/40882092-9c55-4adf-a387-6fe7f0afe114.jpg',
+  'МЕТАЛЛУРГ': '⚫',
+  'СОЧИ': '🔷',
+  'АДМИРАЛ': '⚓'
 };
 
 function MatchCard({ 
@@ -168,35 +180,56 @@ function MatchCard({
   );
 }
 
+const DEFAULT_TEAMS: Team[] = [
+  { id: '1', name: 'ЦСКА', logo: TEAM_LOGOS['ЦСКА'], wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Иванов А.', 'Петров Б.', 'Сидоров В.', 'Козлов Г.', 'Морозов Д.'] },
+  { id: '2', name: 'СКА', logo: TEAM_LOGOS['СКА'], wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Смирнов А.', 'Кузнецов Б.', 'Попов В.', 'Волков Г.', 'Соколов Д.'] },
+  { id: '3', name: 'ЛАДА', logo: TEAM_LOGOS['ЛАДА'], wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Лебедев А.', 'Новиков Б.', 'Федоров В.', 'Михайлов Г.', 'Александров Д.'] },
+  { id: '4', name: 'АМУР', logo: TEAM_LOGOS['АМУР'], wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Васильев А.', 'Павлов Б.', 'Семенов В.', 'Голубев Г.', 'Виноградов Д.'] },
+  { id: '5', name: 'АКБАРС', logo: TEAM_LOGOS['АКБАРС'], wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Романов А.', 'Егоров Б.', 'Макаров В.', 'Фролов Г.', 'Григорьев Д.'] },
+  { id: '6', name: 'МЕТАЛЛУРГ', logo: '⚫', wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Степанов А.', 'Николаев Б.', 'Орлов В.', 'Андреев Г.', 'Яковлев Д.'] },
+  { id: '7', name: 'СОЧИ', logo: '🔷', wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Борисов А.', 'Герасимов Б.', 'Ильин В.', 'Гусев Г.', 'Титов Д.'] },
+  { id: '8', name: 'АДМИРАЛ', logo: '⚓', wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Максимов А.', 'Сергеев Б.', 'Захаров В.', 'Королев Г.', 'Никитин Д.'] },
+];
+
 const Index = () => {
-  const [teams, setTeams] = useState<Team[]>([
-    { id: '1', name: 'ЦСКА', logo: '🔴', wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Иванов А.', 'Петров Б.', 'Сидоров В.', 'Козлов Г.', 'Морозов Д.'] },
-    { id: '2', name: 'СКА', logo: '🔵', wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Смирнов А.', 'Кузнецов Б.', 'Попов В.', 'Волков Г.', 'Соколов Д.'] },
-    { id: '3', name: 'ЛАДА', logo: '🟢', wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Лебедев А.', 'Новиков Б.', 'Федоров В.', 'Михайлов Г.', 'Александров Д.'] },
-    { id: '4', name: 'АМУР', logo: '🟠', wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Васильев А.', 'Павлов Б.', 'Семенов В.', 'Голубев Г.', 'Виноградов Д.'] },
-    { id: '5', name: 'АКБАРС', logo: '🟤', wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Романов А.', 'Егоров Б.', 'Макаров В.', 'Фролов Г.', 'Григорьев Д.'] },
-    { id: '6', name: 'МЕТАЛЛУРГ', logo: '⚫', wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Степанов А.', 'Николаев Б.', 'Орлов В.', 'Андреев Г.', 'Яковлев Д.'] },
-    { id: '7', name: 'СОЧИ', logo: '🔷', wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Борисов А.', 'Герасимов Б.', 'Ильин В.', 'Гусев Г.', 'Титов Д.'] },
-    { id: '8', name: 'АДМИРАЛ', logo: '⚓', wins: 0, losses: 0, otLosses: 0, goalsFor: 0, goalsAgainst: 0, players: ['Максимов А.', 'Сергеев Б.', 'Захаров В.', 'Королев Г.', 'Никитин Д.'] },
-  ]);
+  const navigate = useNavigate();
+  const [teams, setTeams] = useState<Team[]>(DEFAULT_TEAMS);
 
-  const [matches, setMatches] = useState<Match[]>([
-    { id: '1', tour: 1, homeTeam: 'ЦСКА', awayTeam: 'СКА', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '01.11' },
-    { id: '2', tour: 1, homeTeam: 'ЛАДА', awayTeam: 'АМУР', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '01.11' },
-    { id: '3', tour: 1, homeTeam: 'АКБАРС', awayTeam: 'МЕТАЛЛУРГ', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '02.11' },
-    { id: '4', tour: 1, homeTeam: 'СОЧИ', awayTeam: 'АДМИРАЛ', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '02.11' },
-    { id: '5', tour: 2, homeTeam: 'СКА', awayTeam: 'ЛАДА', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '08.11' },
-    { id: '6', tour: 2, homeTeam: 'АМУР', awayTeam: 'ЦСКА', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '08.11' },
-    { id: '7', tour: 2, homeTeam: 'МЕТАЛЛУРГ', awayTeam: 'СОЧИ', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '09.11' },
-    { id: '8', tour: 2, homeTeam: 'АДМИРАЛ', awayTeam: 'АКБАРС', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '09.11' },
-  ]);
-
-  const [champions] = useState<Champion[]>([
-    { season: '2024', winner: 'ЦСКА', runnerUp: 'СКА' },
-    { season: '2023', winner: 'СКА', runnerUp: 'АКБАРС' },
-  ]);
-
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [champions, setChampions] = useState<Champion[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+
+  useEffect(() => {
+    const savedTeams = localStorage.getItem('phl_teams');
+    const savedMatches = localStorage.getItem('phl_matches');
+    const savedChampions = localStorage.getItem('phl_champions');
+    
+    if (savedTeams) {
+      setTeams(JSON.parse(savedTeams));
+    }
+    if (savedMatches) {
+      setMatches(JSON.parse(savedMatches));
+    } else {
+      setMatches([
+        { id: '1', tour: 1, homeTeam: 'ЦСКА', awayTeam: 'СКА', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '01.11' },
+        { id: '2', tour: 1, homeTeam: 'ЛАДА', awayTeam: 'АМУР', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '01.11' },
+        { id: '3', tour: 1, homeTeam: 'АКБАРС', awayTeam: 'МЕТАЛЛУРГ', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '02.11' },
+        { id: '4', tour: 1, homeTeam: 'СОЧИ', awayTeam: 'АДМИРАЛ', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '02.11' },
+        { id: '5', tour: 2, homeTeam: 'СКА', awayTeam: 'ЛАДА', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '08.11' },
+        { id: '6', tour: 2, homeTeam: 'АМУР', awayTeam: 'ЦСКА', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '08.11' },
+        { id: '7', tour: 2, homeTeam: 'МЕТАЛЛУРГ', awayTeam: 'СОЧИ', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '09.11' },
+        { id: '8', tour: 2, homeTeam: 'АДМИРАЛ', awayTeam: 'АКБАРС', homeScore: null, awayScore: null, overtime: false, shootout: false, date: '09.11' },
+      ]);
+    }
+    if (savedChampions) {
+      setChampions(JSON.parse(savedChampions));
+    } else {
+      setChampions([
+        { season: '2024', winner: 'ЦСКА', runnerUp: 'СКА' },
+        { season: '2023', winner: 'СКА', runnerUp: 'АКБАРС' },
+      ]);
+    }
+  }, []);
 
   const calculatePoints = (team: Team) => team.wins * 2 + team.otLosses;
   
@@ -256,7 +289,10 @@ const Index = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <h1 className="text-5xl font-bold neon-text text-primary">PHL</h1>
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-center">
+              <Button variant="ghost" onClick={() => navigate('/regulations')} className="hover:text-primary">
+                Регламент
+              </Button>
               <Button variant="outline" size="icon" className="hover:text-primary hover:border-primary transition-all" asChild>
                 <a href="https://t.me" target="_blank" rel="noopener noreferrer">
                   <Icon name="Send" size={20} />
@@ -328,7 +364,11 @@ const Index = () => {
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex items-center gap-3">
-                            <span className="text-2xl">{team.logo}</span>
+                            {team.logo.startsWith('http') ? (
+                              <img src={team.logo} alt={team.name} className="w-8 h-8 object-contain rounded" />
+                            ) : (
+                              <span className="text-2xl">{team.logo}</span>
+                            )}
                             <span 
                               className="font-semibold text-lg"
                               style={{ color: TEAM_COLORS[team.name] }}
@@ -367,7 +407,11 @@ const Index = () => {
                 >
                   <div className="p-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <span className="text-4xl">{team.logo}</span>
+                      {team.logo.startsWith('http') ? (
+                        <img src={team.logo} alt={team.name} className="w-12 h-12 object-contain rounded" />
+                      ) : (
+                        <span className="text-4xl">{team.logo}</span>
+                      )}
                       <h3 
                         className="text-2xl font-bold group-hover:neon-text transition-all"
                         style={{ color: TEAM_COLORS[team.name] }}
@@ -451,11 +495,31 @@ const Index = () => {
         </Tabs>
       </main>
 
+      <footer className="border-t border-primary/10 bg-black/20 py-4 mt-12">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-muted-foreground text-sm">
+            © 2025 Первая Хоккейная Лига. Все права защищены.
+            {' '}
+            <span 
+              onClick={() => navigate('/admin')} 
+              className="opacity-5 hover:opacity-100 hover:text-primary transition-all cursor-pointer select-none"
+              title="Админ-панель"
+            >
+              ⚙
+            </span>
+          </p>
+        </div>
+      </footer>
+
       <Dialog open={!!selectedTeam} onOpenChange={() => setSelectedTeam(null)}>
         <DialogContent className="glass-card border-primary/30">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3 text-3xl">
-              <span className="text-4xl">{selectedTeam?.logo}</span>
+              {selectedTeam?.logo.startsWith('http') ? (
+                <img src={selectedTeam.logo} alt={selectedTeam.name} className="w-12 h-12 object-contain rounded" />
+              ) : (
+                <span className="text-4xl">{selectedTeam?.logo}</span>
+              )}
               <span style={{ color: selectedTeam ? TEAM_COLORS[selectedTeam.name] : '' }}>
                 {selectedTeam?.name}
               </span>
